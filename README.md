@@ -8,4 +8,4 @@ TOTP password validator written in go language
 - Only one process allowed at a time
 
 ## User Interface
-![image](https://github.com/loonpn/go-authenticator/assets/107356466/0555a151-bbb1-4a39-8d4b-da82e48c1ec7)
+![image](https://github.com/loonpn/go-authenticator/assets/107356466/a0dc168d-94f4-49f3-ae43-dab4946a470b)
