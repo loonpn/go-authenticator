@@ -23,14 +23,14 @@ go build
 Add follow commands to your /home/username/.profile
 ```bash
 # Authenticator
-stty "" INT
+trap "" INT
 if [ -x "/path/to/go-authenticator" ]; then
     /path/to/go-authenticator
     if [ $? -ne 0 ]; then
         logout
     fi
 fi
-stty sane
+trap - INT
 ```
 ### ttyd Web Console
 Create a shell script:
