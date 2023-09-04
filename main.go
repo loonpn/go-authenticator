@@ -18,7 +18,6 @@ const (
 	
 	secretKey     = "IFBEGRCFIZDTCMRT"    // BASE32 encoding Key
 	timeout       = 30 * time.Second      // Timeout
-	emergencyFile = "/etc/emergencycode"  // Emergency code save path
 )
 
 var (
@@ -26,6 +25,7 @@ var (
 	//path          = ""
 	//arguments     = ""
 	emergencyCodes []string
+	emergencyFile = "emergencycode"  // Emergency code save path
 )
 
 func main() {
@@ -42,6 +42,7 @@ func main() {
 		panic(err)
 	}
 	accountName = currentUser.Username + "@" + name
+	emergencyFile = currentUser.HomeDir + "/" + emergencyFile
 
 	if isFirstRun() {
 		fmt.Println("This is your first time to run this program. Please scan the following QR code and save your key")
@@ -150,14 +151,14 @@ func verifyCode(code string) bool {
 			return true
 		}
 	}
-	valid, err := totp.ValidateCustom(code, secretKey, time.Now(), totp.ValidateOpts{
+	_, err := totp.ValidateCustom(code, secretKey, time.Now(), totp.ValidateOpts{
 		Digits:    6,
         Algorithm: otp.AlgorithmSHA1,
 	})
 	if err != nil {
 		return false
 	}
-	return valid
+	return true
 }
 
 func generateEmergencyCodes(n int) {
