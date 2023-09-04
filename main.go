@@ -151,14 +151,14 @@ func verifyCode(code string) bool {
 			return true
 		}
 	}
-	_, err := totp.ValidateCustom(code, secretKey, time.Now(), totp.ValidateOpts{
+	valid, err := totp.ValidateCustom(code, secretKey, time.Now(), totp.ValidateOpts{
 		Digits:    6,
         Algorithm: otp.AlgorithmSHA1,
 	})
 	if err != nil {
 		return false
 	}
-	return true
+	return valid
 }
 
 func generateEmergencyCodes(n int) {
