@@ -17,3 +17,27 @@ go mod init go-authenticator
 go mod tidy
 go build
 ```
+
+## Ussage
+### Login Script
+Add follow commands to your /home/username/.profile
+```bash
+# Authenticator
+/path/to/go-authenticator
+if [ $? -ne 0 ]; then
+    logout
+fi
+```
+### ttyd Web Console
+Create a shell script:
+```bash
+#!/bin/sh
+/path/to/go-authenticator
+if [ $? -eq 0 ]; then
+    exec /bin/login
+fi
+```
+Run ttyd using the following command
+```bash
+ttyd /path/to/shellscript
+```
