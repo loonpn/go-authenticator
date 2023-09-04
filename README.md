@@ -9,3 +9,11 @@ TOTP password validator written in go language
 
 ## User Interface
 ![image](https://github.com/loonpn/go-authenticator/assets/107356466/a0dc168d-94f4-49f3-ae43-dab4946a470b)
+
+## Build
+```bash
+sudo apt install golang
+go mod init go-authenticator
+go mod tidy
+go build
+```
