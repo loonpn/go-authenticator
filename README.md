@@ -23,17 +23,23 @@ go build
 Add follow commands to your /home/username/.profile
 ```bash
 # Authenticator
-/path/to/go-authenticator
-if [ $? -ne 0 ]; then
-    logout
+if [ -x "/path/to/go-authenticator" ]; then
+    /path/to/go-authenticator
+    if [ $? -ne 0 ]; then
+        logout
+    fi
 fi
 ```
 ### ttyd Web Console
 Create a shell script:
 ```bash
 #!/bin/sh
-/path/to/go-authenticator
-if [ $? -eq 0 ]; then
+if [ -x "/path/to/go-authenticator" ]; then
+    /path/to/go-authenticator
+    if [ $? -eq 0 ]; then
+        exec /bin/login
+    fi
+else
     exec /bin/login
 fi
 ```
