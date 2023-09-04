@@ -16,21 +16,21 @@ import (
 
 const (
 	
-	secretKey     = "IFBEGRCFIZDTCMRT"         // 密钥,BASE32编码
-	timeout       = 30 * time.Second           // 超时时间
-	emergencyFile = "/etc/emergencycode" // 紧急密码保存路径
+	secretKey     = "IFBEGRCFIZDTCMRT"    // BASE32 encoding Key
+	timeout       = 30 * time.Second      // Timeout
+	emergencyFile = "/etc/emergencycode"  // Emergency code save path
 )
 
 var (
-	accountName     = ""        // 账号名称
-	//path          = ""        // 程序路径
-	//arguments     = ""        // 程序运行参数
-	emergencyCodes []string     // 紧急密码
+	accountName     = ""
+	//path          = ""
+	//arguments     = ""
+	emergencyCodes []string
 )
 
 func main() {
 	if isRunning() {
-		fmt.Println("程序已经在运行，请勿重复启动")
+		fmt.Println("The program is already running")
 		os.Exit(1)
 	}
 	currentUser, err := user.Current()
@@ -44,25 +44,25 @@ func main() {
 	accountName = currentUser.Username + "@" + name
 
 	if isFirstRun() {
-		fmt.Println("首次运行程序，请扫描以下二维码并保存账号和密钥")
+		fmt.Println("This is your first time to run this program. Please scan the following QR code and save your key")
 		showQRCode()
-		fmt.Printf("请输入随机密码: ")
+		fmt.Printf("Please enter verification code: ")
 		code := readCode()
 		if verifyCode(code) {
-			fmt.Println("验证成功，以下是紧急密码，请妥善保存")
-			generateEmergencyCodes(6) // 随机生成6个紧急密码
+			fmt.Println("Your emergency scratch codes are:")
+			generateEmergencyCodes(6)
 			saveToFile()
 			showEmergencyCodes()
 			os.Exit(0)
 		} else {
-			fmt.Println("验证失败")
+			fmt.Println("Authenticate failed")
 		}
 	} else {
 		readFromFile()
-		fmt.Printf("请在30秒内输入临时密码: ")
+		fmt.Printf("Please enter verification code: ")
 		code := readCodeWithTimeout()
 		if verifyCode(code) {
-			fmt.Println("验证成功")
+			fmt.Println("Authenticate successfully")
 			/*for k, v := range os.Args {
 				if k == 1 {
 					path = v
@@ -78,14 +78,13 @@ func main() {
 			os.Exit(0)
 		} else {
 			if code != "" {
-				fmt.Println("验证失败")
+				fmt.Println("Authenticate failed")
 			}
 		}
 	}
 	os.Exit(1)
 }
 
-// 判断是否首次运行
 func isFirstRun() bool {
 	if _, err := os.Stat(emergencyFile); err == nil {
 		return false
@@ -93,18 +92,16 @@ func isFirstRun() bool {
 	return true
 }
 
-// 判断是否已经在运行
 func isRunning() bool {
 	cmd := exec.Command("pgrep", "-f", os.Args[0])
 	output, err := cmd.Output()
 	if err != nil {
 		return false
 	}
-	count := len(output) / 5 // 每个进程ID占5个字节
-	return count > 1         // 如果大于1说明有多个进程实例
+	count := len(output) / 5 // Each process ID occupies 5 bytes
+	return count > 1         // If it is greater than 1, it indicates that the program is running
 }
 
-// 显示二维码字符图案
 func showQRCode() {
 	key, err := totp.GenerateCodeCustom(secretKey, time.Now(), totp.ValidateOpts{
 		Digits:    6,
@@ -121,14 +118,12 @@ func showQRCode() {
 	fmt.Println(qr.ToSmallString(false))
 }
 
-// 读取用户输入的密码
 func readCode() string {
 	var code string
 	fmt.Scanln(&code)
 	return code
 }
 
-// 读取用户输入的密码，带超时功能
 func readCodeWithTimeout() string {
 	ch := make(chan string)
 	go func() {
@@ -144,7 +139,6 @@ func readCodeWithTimeout() string {
 	}
 }
 
-// 验证用户输入的密码是否正确
 func verifyCode(code string) bool {
 	if len(code) != 6 && len(code) != 12 || !isDigit(code) {
 		return false
@@ -166,7 +160,6 @@ func verifyCode(code string) bool {
 	return valid
 }
 
-// 随机生成紧急密码
 func generateEmergencyCodes(n int) {
 	emergencyCodes = make([]string, n)
 	for i := 0; i < n; i++ {
@@ -182,7 +175,6 @@ func generateEmergencyCodes(n int) {
 	}
 }
 
-// 保存紧急代码到文件
 func saveToFile() {
 	str := ""
 	for _, i := range emergencyCodes {
@@ -202,7 +194,6 @@ func saveToFile() {
 	}
 }
 
-// 读取文件
 func readFromFile() {
 	content, err := ioutil.ReadFile(emergencyFile)
 	if err != nil {
@@ -216,30 +207,22 @@ func readFromFile() {
 	}
 }
 
-// 判断字符串是否为数字
 func isDigit(str string) bool {
-	// 遍历字符串的每个字节
 	for i := 0; i < len(str); i++ {
-		// 获取字节对应的ASCII码
 		ascii := int(str[i])
-		// 判断ASCII码是否在0-9的范围内
 		if ascii < 48 || ascii > 57 {
-			// 如果不是，返回false
 			return false
 		}
 	}
-	// 如果都是，返回true
 	return true
 }
 
-// 显示紧急密码
 func showEmergencyCodes() {
 	for _, c := range emergencyCodes {
 		fmt.Println(c)
 	}
 }
 /*
-// 执行指定的路径程序
 func runPathProgram() {
 	if path == "" {
 		return
